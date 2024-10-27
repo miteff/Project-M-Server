@@ -6,17 +6,17 @@ dotenv.config()
 
 const app = express()
 
-app.get('/', (req, res) => {
-    res.status(200).json({ 
-        status: 200,
-        message: 'Hello World!' 
+app.use('/api/v1/auth', authRouter)
+
+app.use('*', (req, res, next) => {
+    res.status(404).json({ 
+        status: 'Ошибка',
+        message: 'Введенный URL не существует' 
     })
 })
-
-app.use('/api/v1/auth', authRouter)
     
 const PORT = process.env.PORT || 5000
 
 app.listen(PORT, () => {
-    console.log(`Server running on port`)
+    console.log(`Server running on port`, PORT)
 })
