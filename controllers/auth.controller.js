@@ -6,51 +6,50 @@ import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendRe
 import User from '../models/user.model.js';
 
 export const signup = async (req, res) => {
-	const { email, password, name } = req.body;
+    const { email, password, name } = req.body;
 
-	try {
-		if (!email || !password || !name) {
-			throw new Error("Все поля обязательны к заполнению");
-		}
+    try {
+        if (!email || !password || !name) {
+            throw new Error("Все поля обязательны к заполнению");
+        }
 
-		const userAlreadyExists = await User.findOne({ email });
-		//console.log("userAlreadyExists", userAlreadyExists);
+        const userAlreadyExists = await User.findOne({ where: { email } });
 
-		if (userAlreadyExists) {
-			return res.status(400).json({ success: false, message: "Пользователь с таким email уже существует." });
-		}
+        if (userAlreadyExists) {
+            return res.status(400).json({ success: false, message: "Пользователь с таким email уже существует." });
+        }
 
-		const hashedPassword = await bcryptjs.hash(password, 10);
-		const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+        const hashedPassword = await bcryptjs.hash(password, 10);
+        const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
 
-		const user = new User({
-			email,
-			password: hashedPassword,
-			name,
-			verificationToken,
-			verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
-		});
+        const user = await User.create({
+            email,
+            password: hashedPassword,
+            name,
+            verificationToken,
+            verificationTokenExpiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
+        });
 
-		await user.save();
+        // jwt
+        generateTokenAndSetCookie(res, user.id); // Используйте user.id вместо user._id
 
-		// jwt
-		generateTokenAndSetCookie(res, user._id);
-
-		// Отправка email для подтверждения
+        // Отправка email для подтверждения
         await sendVerificationEmail(user.email, verificationToken);
 
-
-		res.status(200).json({
-			success: true,
-			message: "Полььзователь успешно создан.",
-			user: {
-				...user._doc,
-				password: undefined,
-			},
-		});
-	} catch (error) {
-		res.status(400).json({ success: false, message: error.message });
-	}
+        res.status(200).json({
+            success: true,
+            message: "Пользователь успешно создан.",
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                verificationToken: user.verificationToken,
+                verificationTokenExpiresAt: user.verificationTokenExpiresAt,
+            },
+        });
+    } catch (error) {
+        res.status(400).json({ success: false, message: error.message });
+    }
 };
 
 export const signin = async(req, res) => {
