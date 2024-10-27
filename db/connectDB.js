@@ -1,12 +1,26 @@
-import mongoose from "mongoose";
+// connectDB.js
+import pkg from 'pg'; 
+const { Client } = pkg;
+import dotenv from 'dotenv';
 
-export const connectDB = async () => {
-	try {
-		console.log("mongo_uri: ", process.env.MONGO_URL);
-		const conn = await mongoose.connect(process.env.MONGO_URL);
-		console.log(`MongoDB Connected: ${conn.connection.host}`);
-	} catch (error) {
-		console.log("Error connection to MongoDB: ", error.message);
-		process.exit(1); // 1 is failure, 0 status code is success
-	}
+dotenv.config();
+
+const client = new Client({
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_DATABASE,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
+});
+
+const connectDB = async () => {
+    try {
+        await client.connect();
+        console.log("Подключение к базе данных PostgreSQL успешно установлено.");
+    } catch (error) {
+        console.error("Ошибка подключения к базе данных:", error);
+        process.exit(1);
+    }
 };
+
+export default connectDB;

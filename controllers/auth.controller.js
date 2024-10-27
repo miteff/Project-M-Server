@@ -3,7 +3,7 @@ import crypto from 'crypto'
 
 import { generateTokenAndSetCookie } from '../utils/generateTokenAndSetCookie.js';
 import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSuccessEmail } from '../mailsendler/emails.js';
-import { User } from '../models/user.model.js';
+import User from '../models/user.model.js';
 
 export const signup = async (req, res) => {
 	const { email, password, name } = req.body;
