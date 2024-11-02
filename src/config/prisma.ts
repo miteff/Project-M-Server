@@ -1,5 +1,4 @@
-import pkg from '@prisma/client';
-const { PrismaClient } = pkg;
+import { PrismaClient, Prisma } from '@prisma/client';
 
 const prisma = new PrismaClient({
   datasources: {
@@ -10,7 +9,7 @@ const prisma = new PrismaClient({
   log: ['error', 'warn']
 });
 
-prisma.$on('error', (e) => {
+prisma.$on('error', (e: any) => {
   console.error('Prisma Client error:', e);
 });
 
