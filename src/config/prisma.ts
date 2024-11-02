@@ -10,7 +10,7 @@ const prisma = new PrismaClient({
 });
 
 prisma.$on('error', (e: any) => {
-  console.error('Prisma Client error:', e);
+  console.error('Ошибка клиента Prisma:', e);
 });
 
 export default prisma;

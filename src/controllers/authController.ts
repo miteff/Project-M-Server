@@ -13,7 +13,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     });
 
     if (userExists) {
-      res.status(400).json({ message: 'User already exists' });
+      res.status(400).json({ message: 'Пользователь уже существует' });
       return;
     }
 
@@ -53,14 +53,14 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     });
 
     if (!user) {
-      res.status(401).json({ message: 'Invalid credentials' });
+      res.status(401).json({ message: 'Неверные учетные данные' });
       return;
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      res.status(401).json({ message: 'Invalid credentials' });
+      res.status(401).json({ message: 'Неверные учетные данные' });
       return;
     }
 
