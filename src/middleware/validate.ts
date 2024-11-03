@@ -19,7 +19,7 @@ export const validateRegistration = (req: Request, res: Response, next: NextFunc
   const errors: string[] = [];
 
   if (!email || !validateEmail(email)) {
-    errors.push('Valid email is required');
+    errors.push('Требуется указать действительный адрес электронной почты');
   }
 
   if (!validatePassword(password)) {
